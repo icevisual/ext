@@ -104,16 +104,7 @@ function avav()
     i ++;
 }
 
-// setTimeout(function(){
 
-//     navigator.bluetooth.requestDevice({
-//         filters: [ 
-//             { namePrefix: 'PLAYBULB' } 
-//         ],
-//         optionalServices: [ 0xff0f ]
-//     });
-
-// },10000);
 
 // name
 // document.querySelector(".header-link").innerHTML
