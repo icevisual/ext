@@ -50,7 +50,7 @@ define([], function() {
 				self.heartCheck.start();
 			};
 			this.wsObj.onmessage = function(event) {
-				console.log("onmessage", event.Data);
+				console.log("onmessage", event.data);
 				self.heartCheck.reset();
 			}
 		},
