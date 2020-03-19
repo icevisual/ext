@@ -12,6 +12,12 @@
 
 
 
+require(['SDK'],function(SDK){
+	console.log(SDK);
+	SDK.ws.createWebSocket("ws://127.0.0.1:38950/SmellPlayer");
+});
+
+
 
 
 var videoSeletor;
@@ -119,67 +125,43 @@ function avav()
     }
     i ++;
 }
-
-function InitializeWebSockets(onopen, onerror) {
-	console.log("InitializeWebSockets")
-	var client = new WebSocket("ws://127.0.0.1:38950/SmellPlayer");
-	client.onopen = function(evt) {
-		console.log("onopen");
-		clientReady = true;
-		onopen();
-		if(ReadySend != "")
-			client.send(ReadySend);
-	};
-	client.onclose = function(evt) {
-		console.log("onclose");
-	};
-	client.onmessage = function(evt) {
-		console.log("onmessage", evt);
-	};
-	client.onerror = function(evt) {
-		console.log("onerror");
-		onerror();
-	};
-	return client;
-}
-
-
-
-var ws = new WebSocket("ws://127.0.0.1:38950/SmellPlayer");
-ws.onopen = function() {
-     console.log("opend");
-};
-ws.onmessage = function(e) {
-  console.log("client：接收到服务端的消息 " + e.data);
-
-};
-ws.onclose = function(params) {
-  console.log("client：关闭连接");
-};
-console.log("ws.readyState = " + ws.readyState);
-var ScritpChangePosition = function(start)
-{
-    start = parseInt(start * 1000);
-    if(ws.readyState == ws.OPEN)
-    {
-        ws.send("{'cmd':'ScriptJump','params':{'start':"+start+"}}");
-    } 
-    else{
-        console.log("WS Not Ready " + ws.readyState);
-    }
-}
-
-var SendStartScript = function(script_id, start)
-{
-    start = parseInt(start * 1000);
-    if(ws.readyState ==ws.OPEN)
-    {
-        ws.send("{'cmd':'PlayScript','params':{'start':"+start+",'script_id':"+script_id+"}}");
-    } 
-    else{
-        console.log("WS Not Ready " + ws.readyState);
-    }
-}
+//
+//
+//var ws = new WebSocket("ws://127.0.0.1:38950/SmellPlayer");
+//ws.onopen = function() {
+//   console.log("opend");
+//};
+//ws.onmessage = function(e) {
+//console.log("client：接收到服务端的消息 " + e.data);
+//
+//};
+//ws.onclose = function(params) {
+//console.log("client：关闭连接");
+//};
+//console.log("ws.readyState = " + ws.readyState);
+//var ScritpChangePosition = function(start)
+//{
+//  start = parseInt(start * 1000);
+//  if(ws.readyState == ws.OPEN)
+//  {
+//      ws.send("{'cmd':'ScriptJump','params':{'start':"+start+"}}");
+//  } 
+//  else{
+//      console.log("WS Not Ready " + ws.readyState);
+//  }
+//}
+//
+//var SendStartScript = function(script_id, start)
+//{
+//  start = parseInt(start * 1000);
+//  if(ws.readyState ==ws.OPEN)
+//  {
+//      ws.send("{'cmd':'PlayScript','params':{'start':"+start+",'script_id':"+script_id+"}}");
+//  } 
+//  else{
+//      console.log("WS Not Ready " + ws.readyState);
+//  }
+//}
 
 
 var movie_start = false;

@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "Scentreal Video controller",
-  "description": "This extension control the Scentreal device play smell when play videos",
+  "name": "Scentrealm Video controller",
+  "description": "This extension control the Scentrealm device play smell when play videos",
   "version": "1.0",
   "browser_action": {
     "default_icon": "icon.png"
@@ -19,10 +19,9 @@
         "https://v.youku.com/*"
       ],
       "js": [
-        "jquery.min.js",
-        "mqttws31.js",
-        "require.js",
-        "OpenSDK.min.js",
+        "lib/require.js",
+        "lib/jquery.min.js",
+        "build/sdk.min.js",
         "content.js"
       ],
       "css":[
