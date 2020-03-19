@@ -1,3 +1,19 @@
+
+
+// 1. 读取 url 判断 网站
+// 2. 通过不同网站获取适配播放器，界面渲染位置
+// 3. 渲染界面
+// 4. 读取当前播放视频 url ，视频名称
+// 5. 获取 播放器 元素，获取当前播放信息
+// 6. 判断当前在播放 【气味视频】
+// 7. 连接 websocket 保持通讯
+// 8. 将视频信息发送给 客户端 以判断是否是气味视频？
+// 9. 定时器循环读取视频进度
+
+
+
+
+
 var videoSeletor;
 var videoContainerSelector;
 
@@ -10,10 +26,10 @@ if (urlHost.indexOf("youku") > -1) {
     videoSeletor = "#flashbox video";
     videoContainerSelector = ".qy-player-side-head .head-title";
 }
-
+console.log("video0=", $(videoSeletor));
 var $video = document.querySelector(videoSeletor);
 // var $video = document.querySelector('#flashbox video');
-console.log("video=", $video);
+console.log("video1=", $video);
 var container = document.createElement("DIV");
 container.style.position = "absolute";
 container.style.top = 0;
@@ -104,8 +120,69 @@ function avav()
     i ++;
 }
 
+function InitializeWebSockets(onopen, onerror) {
+	console.log("InitializeWebSockets")
+	var client = new WebSocket("ws://127.0.0.1:38950/SmellPlayer");
+	client.onopen = function(evt) {
+		console.log("onopen");
+		clientReady = true;
+		onopen();
+		if(ReadySend != "")
+			client.send(ReadySend);
+	};
+	client.onclose = function(evt) {
+		console.log("onclose");
+	};
+	client.onmessage = function(evt) {
+		console.log("onmessage", evt);
+	};
+	client.onerror = function(evt) {
+		console.log("onerror");
+		onerror();
+	};
+	return client;
+}
 
 
+
+var ws = new WebSocket("ws://127.0.0.1:38950/SmellPlayer");
+ws.onopen = function() {
+     console.log("opend");
+};
+ws.onmessage = function(e) {
+  console.log("client：接收到服务端的消息 " + e.data);
+
+};
+ws.onclose = function(params) {
+  console.log("client：关闭连接");
+};
+console.log("ws.readyState = " + ws.readyState);
+var ScritpChangePosition = function(start)
+{
+    start = parseInt(start * 1000);
+    if(ws.readyState == ws.OPEN)
+    {
+        ws.send("{'cmd':'ScriptJump','params':{'start':"+start+"}}");
+    } 
+    else{
+        console.log("WS Not Ready " + ws.readyState);
+    }
+}
+
+var SendStartScript = function(script_id, start)
+{
+    start = parseInt(start * 1000);
+    if(ws.readyState ==ws.OPEN)
+    {
+        ws.send("{'cmd':'PlayScript','params':{'start':"+start+",'script_id':"+script_id+"}}");
+    } 
+    else{
+        console.log("WS Not Ready " + ws.readyState);
+    }
+}
+
+
+var movie_start = false;
 // name
 // document.querySelector(".header-link").innerHTML
 // link = window.location.href
@@ -113,28 +190,28 @@ function avav()
 var video_name = document.querySelector(".header-link").innerHTML;
 setInterval(function(){
     if($video)
+    {
+        if (!movie_start && $video.duration > 3600)
+        {
+            //movie_start = true;
+            //SendStartScript(1,$video.currentTime);
+            return;
+        }
+        if(movie_start) {
+            //ScritpChangePosition($video.currentTime);
+        }
+        //console.log("ws.readyState = " + ws.readyState);
         console.log("video pos=",video_name, $video.currentTime,"/",$video.duration);
+    }
     if(!document.querySelector('.ynk-playback-control'))
     {
         avav();
     }
 
-    // $.ajax({
-    //     //请求方式
-    //     type : "GET",
-    //     //请求的媒体类型
-    //     contentType: "application/json;charset=UTF-8",
-    //     //请求地址
-    //     url : "http://192.168.1.8:19999/api/login",
-    //     //请求成功
-    //     success : function(result) {
-    //         console.log(result);
-    //     },
-    //     //请求失败，包含具体的错误信息
-    //     error : function(e){
-    //         console.log(e.status);
-    //         console.log(e.responseText);
-    //     }
-    // });
+
 },5000);
+
+
+                   
+
 
