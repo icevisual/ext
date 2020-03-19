@@ -34,6 +34,17 @@ define([], function() {
 			} catch(e) {
 				this.reconnect(url);
 			}
+			return this.wsObj;
+		},
+		SendMessage: function(msg) {
+			if(this.wsObj.readyState == WebSocket.OPEN) {
+				console.log("WebSocket Send",msg);
+				this.wsObj.send(msg);
+				return true;
+			} else {
+				console.log("WebSocket Not Ready");
+				return false;
+			}
 		},
 		initEventHandle: function() {
 			self = this;
@@ -52,10 +63,15 @@ define([], function() {
 			this.wsObj.onmessage = function(event) {
 				console.log("onmessage", event.data);
 				self.heartCheck.reset();
+
+				if(event.data && self.OnMessage) {
+					self.OnMessage(event.data);
+				}
 			}
 		},
+		OnMessage: null,
 		heartCheck: {
-			timeout: 10000, //60s
+			timeout: 60000, //60s
 			timeoutObj: null,
 			serverTimeoutObj: null,
 			reset: function() {

@@ -21,8 +21,7 @@
       "js": [
         "lib/require.js",
         "lib/jquery.min.js",
-        "build/sdk.min.js",
-        "content.js"
+        "build/sdk.min.js"
       ],
       "css":[
         "style.css"
