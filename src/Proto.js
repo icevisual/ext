@@ -35,78 +35,44 @@ define([], function() {
 			}
 			return JSON.stringify(result);
 		},
-
+		AssembleProtoAuto: function(cmd, paramNames, params) {
+			var result = {
+				cmd: cmd,
+			};
+			if(params && paramNames && params.length > 0 && paramNames.length > 0) {
+				result['params'] = {};
+				for(var i = 0; i < params.length; i++) {
+					result['params'][paramNames[i]] = params[i];
+				}
+			}
+			return JSON.stringify(result);
+		},
 		Cmd_VideoInfo: function(url, name, length) {
-			return this.AssembleProto(CMDConst.Cmd_VideoInfo, {
-				'url': url,
-				'name': name,
-				'length': length
-			});
+			return this.AssembleProtoAuto(CMDConst.Cmd_VideoInfo, this.getParameterName(arguments.callee), arguments);
 		},
 
 		Cmd_PlaySmell: function(smell, duration, channel) {
-			return this.AssembleProto(CMDConst.Cmd_PlaySmell, {
-				'smell': smell,
-				'duration': duration,
-				'channel': channel
-			});
+			return this.AssembleProtoAuto(CMDConst.Cmd_PlaySmell, this.getParameterName(arguments.callee), arguments);
 		},
 		Cmd_StopPlay: function(channel) {
-			return this.AssembleProto(CMDConst.Cmd_StopPlay, {
-				'channel': channel
-			});
+			return this.AssembleProtoAuto(CMDConst.Cmd_StopPlay, this.getParameterName(arguments.callee), arguments);
 		},
 		Cmd_PlayScript: function(start, script_id) {
-
-			return this.AssembleProto(CMDConst.Cmd_PlayScript, {
-				'url': url,
-				'name': name,
-				'length': length
-			});
+			return this.AssembleProtoAuto(CMDConst.Cmd_PlayScript, this.getParameterName(arguments.callee), arguments);
 		},
-		Cmd_ScriptJump: function(url, name, length) {
-			var caller = arguments.callee.caller;
-			var names = this.getParameterName(caller);
-			var params = {};
-			for(var i = 0 ;i < arguments.length; i ++)
-			{
-				params[names[i]] = arguments[i];
-			}
-			
-			return this.AssembleProto(CMDConst.Cmd_ScriptJump, params);
+		Cmd_ScriptJump: function(start) {
+			return this.AssembleProtoAuto(CMDConst.Cmd_ScriptJump, this.getParameterName(arguments.callee), arguments);
 		},
-		Cmd_ScriptPause: function(url, name, length) {
-			return this.AssembleProto(CMDConst.Cmd_ScriptPause, {
-				'url': url,
-				'name': name,
-				'length': length
-			});
+		Cmd_ScriptPause: function() {
+			return this.AssembleProtoAuto(CMDConst.Cmd_ScriptPause, this.getParameterName(arguments.callee), arguments);
 		},
-		Cmd_ScriptContinue: function(url, name, length) {
-			return this.AssembleProto(CMDConst.Cmd_ScriptContinue, {
-				'url': url,
-				'name': name,
-				'length': length
-			});
+		Cmd_ScriptContinue: function() {
+			return this.AssembleProtoAuto(CMDConst.Cmd_ScriptContinue, this.getParameterName(arguments.callee), arguments);
 		},
-		Cmd_ScriptStop: function(url, name, length) {
-			return this.AssembleProto(CMDConst.Cmd_ScriptStop, {
-				'url': url,
-				'name': name,
-				'length': length
-			});
+		Cmd_ScriptStop: function() {
+			return this.AssembleProtoAuto(CMDConst.Cmd_ScriptStop, this.getParameterName(arguments.callee), arguments);
 		},
 	};
-
-	// 1. 读取 url 判断 网站
-	// 2. 通过不同网站获取适配播放器，界面渲染位置
-	// 3. 渲染界面
-	// 4. 读取当前播放视频 url ，视频名称
-	// 5. 获取 播放器 元素，获取当前播放信息
-	// 6. 判断当前在播放 【气味视频】
-	// 7. 连接 websocket 保持通讯
-	// 8. 将视频信息发送给 客户端 以判断是否是气味视频？
-	// 9. 定时器循环读取视频进度
 
 	return proto;
 
