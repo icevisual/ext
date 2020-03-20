@@ -140,7 +140,7 @@ define(['WS', 'Utils', 'Logger', 'Proto'], function(ws, Utils, Logger, Proto) {
 	// 更改 定时 同步
 	var _WaitVideoTimer = setInterval(function() {
 		if(videoObj.Ready()) {
-			if(!movie_start && $video.duration > 900) {
+			if(!movie_start && videoObj.Duration() > 900000) {
 				movie_start = true;
 				ws.SendMessage(Proto.Cmd_VideoInfo(window.location.href, video_name, videoObj.Duration()));
 
@@ -158,7 +158,7 @@ define(['WS', 'Utils', 'Logger', 'Proto'], function(ws, Utils, Logger, Proto) {
 	var checkLoopTime = 1;
 	var _WatherTimer = setInterval(function() {
 		if(videoObj.Ready() && movie_start && script_start) {
-			var nowTime = parseInt($video.currentTime * 1000);
+			var nowTime = videoObj.CurrentTime();
 			if(checkLoopTime % 10 == 0 || Math.abs(nowTime - Watcher_loopInterval - Watcher_lastTime) > 100) {
 				console.log("video Jump =", Watcher_lastTime, "/", videoObj.Duration(), "=>", nowTime, " / ", videoObj.Duration());
 				ws.SendMessage(Proto.Cmd_ScriptJump(nowTime));

@@ -7,7 +7,7 @@ define([], function() {
 		Cmd_StopPlay: 'StopPlay',
 		Cmd_PlayScript: 'PlayScript',
 		Cmd_ScriptJump: 'ScriptJump',
-		Cmd_ScriptPause: 'ScriptStop',
+		Cmd_ScriptPause: 'ScriptPause',
 		Cmd_ScriptContinue: 'ScriptContinue',
 		Cmd_ScriptStop: 'ScriptStop',
 	};

@@ -1,42 +1,47 @@
 define(['Utils'],function(Utils) {
 	return {
-		logLevel : 'debug',
+		logLevel : 'log',
 		setLevel : function(level){
 			this.logLevel = level;
 		},
 		debug : function() {
-			this.log('debug', arguments);
+			this.logData('debug', arguments);
 		},
 		info : function() {
-			this.log('info', arguments);
+			this.logData('info', arguments);
 		},
 		notice : function() {
-			this.log('notice', arguments);
+			this.logData('notice', arguments);
 		},
 		warning : function() {
-			this.log('warning', arguments);
+			this.logData('warning', arguments);
 		},
 		error : function() {
-			this.log('error', arguments);
+			this.logData('error', arguments);
+		},
+		log : function() {
+			this.logData('log', arguments);
 		},
 		levelCompare : function(maxLevel, nowLevel) {
 			var level = {
-				'debug' : 1,
-				'info' : 2,
-				'notice' : 3,
-				'warning' : 4,
-				'error' : 5,
+				'log' : 1,
+				'debug' : 2,
+				'info' : 3,
+				'notice' : 4,
+				'warning' : 5,
+				'error' : 6,
 			};
 			if (!level[nowLevel] || !level[maxLevel]) {
 				return false;
 			}
 			return level[nowLevel] >= level[maxLevel];
 		},
-		log : function(level, data) {
+		logData : function(level, data) {
 			if (data.length > 0
 					& this.levelCompare(this.logLevel, level)) {
 				
 				var levelColor = {
+					'log' : 'black',
 					'debug' : 'grey',
 					'info' : 'green',
 					'notice' : 'blue',

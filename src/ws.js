@@ -1,5 +1,5 @@
-define([], function() {
-
+define(['Logger'], function(Logger) {
+	var logger = Logger;
 	var ws = {
 		options: {
 			reconnectInterval: 2000,
@@ -16,11 +16,8 @@ define([], function() {
 				self.lockReconnect = false;
 			}, this.options.reconnectInterval);
 		},
-		log: function(msg) {
-			console.log(msg);
-		},
 		createWebSocket: function(url) {
-			console.log("createWebSocket");
+			logger.log("createWebSocket");
 			this.wsUrl = url;
 			try {
 				if('WebSocket' in window) {
@@ -38,30 +35,34 @@ define([], function() {
 		},
 		SendMessage: function(msg) {
 			if(this.wsObj.readyState == WebSocket.OPEN) {
-				console.log("WebSocket Send",msg);
+				logger.log("WebSocket Send", msg);
 				this.wsObj.send(msg);
 				return true;
 			} else {
-				console.log("WebSocket Not Ready");
+				logger.log("WebSocket Not Ready");
 				return false;
 			}
 		},
 		initEventHandle: function() {
 			self = this;
 			this.wsObj.onclose = function() {
-				self.log("onclose");
+				logger.log("onclose");
 				self.reconnect(self.wsUrl);
 			};
 			this.wsObj.onerror = function(err) {
-				self.log("onerror");
+				logger.log("onerror");
 				self.reconnect(self.wsUrl);
 			};
 			this.wsObj.onopen = function() {
-				self.log("onopen");
+				logger.log("onopen");
+				
+				if(self.OnOpen){
+					self.OnOpen();
+					self.OnOpen = null;
+				}
 				self.heartCheck.start();
 			};
 			this.wsObj.onmessage = function(event) {
-				console.log("onmessage", event.data);
 				self.heartCheck.reset();
 
 				if(event.data && self.OnMessage) {
@@ -69,6 +70,10 @@ define([], function() {
 				}
 			}
 		},
+		AddOpenHandlerOnece:function(fn) {
+			this.OnOpen = fn;
+		},
+		OnOpen: null,
 		OnMessage: null,
 		heartCheck: {
 			timeout: 60000, //60s
