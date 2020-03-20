@@ -10,6 +10,33 @@ define(['WS', 'Utils', 'Logger', 'Proto'], function(ws, Utils, Logger, Proto) {
 	// 8. 将视频信息发送给 客户端 以判断是否是气味视频？
 	// 9. 定时器循环读取视频进度
 
+	var MainWorker = {
+		videoSeletor: "",
+		titleSelector: "",
+		Step_01_AnalyseWebSite: function() {
+
+			return this;
+		},
+		Step_02_GetVideoElemenet: function() {
+			return this;
+		},
+		Step_03_GetValidVideoInfo: function() {
+			return this;
+		},
+		Step_04_AskClientForScript: function() {
+			return this;
+		},
+		Step_05_PlayScript: function() {
+			return this;
+		},
+		Step_06_ListenVideoEvent: function() {
+			return this;
+		},
+		Step_07_SyncScriptPosition: function() {
+			return this;
+		}
+	};
+
 	// 播放器 选择器
 	var videoSeletor;
 	// 附加 UI 容器 选择器
@@ -108,7 +135,7 @@ define(['WS', 'Utils', 'Logger', 'Proto'], function(ws, Utils, Logger, Proto) {
 			script_start = true;
 		}
 	}
-	// 定时读取 视频播放器 时间
+	// 定时读取 视频播放器 时间 
 
 	// 更改 定时 同步
 	var _WaitVideoTimer = setInterval(function() {
