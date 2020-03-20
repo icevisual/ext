@@ -10,30 +10,71 @@ define(['WS', 'Utils', 'Logger', 'Proto'], function(ws, Utils, Logger, Proto) {
 	// 8. 将视频信息发送给 客户端 以判断是否是气味视频？
 	// 9. 定时器循环读取视频进度
 
-	ws.createWebSocket("ws://127.0.0.1:38950/SmellPlayer");
 	// 播放器 选择器
 	var videoSeletor;
 	// 附加 UI 容器 选择器
 	var videoContainerSelector;
+
+	var titleSelector;
+
+	var videoObj = {
+		obj: null,
+		tag: "",
+		Ready: function() {
+			return this.obj ? true : false;
+		},
+		CurrentTime: function() {
+
+			return parseInt(this.obj.currentTime * 1000);
+		},
+		Duration: function() {
+
+			return parseInt(this.obj.duration * 1000);
+		}
+	}
 
 	var urlHost = window.location.host;
 	// 先判断 爱奇艺
 	if(urlHost.indexOf("iqiyi") > -1) {
 		videoSeletor = "#flashbox video";
 		videoContainerSelector = ".qy-player-side-head .head-title";
+		titleSelector = ".header-link";
+		videoObj.tag = 'iqiyi';
+	} else if(urlHost.indexOf("youku") > -1) {
+		videoSeletor = '#ykPlayer video';
+		videoObj.tag = 'youku';
+		titleSelector = "#left-title-content-wrap .subtitle";
 	} else {
 		return;
 	}
+
+	ws.createWebSocket("ws://127.0.0.1:38950/SmellPlayer");
+
 	// 获取 播放器 标签
 	var $video = document.querySelector(videoSeletor);
 
-	console.log("iqiyi video1=", $video);
+	if(!$video) {
+		// 载入时未找到视频标签
+
+		var GetVideoTimer = setInterval(function() {
+
+			$video = document.querySelector(videoSeletor);
+			console.log(videoObj.tag, video_name, "video=", $video);
+			if($video) {
+				videoObj.obj = $video;
+				clearInterval(GetVideoTimer)
+			}
+		}, 2000);
+
+	} else {
+
+		videoObj.obj = $video;
+
+	}
+
 	// 获取当前播放的视频名字
-	var video_name = document.querySelector(".header-link").innerHTML;
-
-	var i = 0;
-	// 添加新 UI
-
+	var video_name = document.querySelector(titleSelector).innerHTML;
+	console.log(videoObj.tag, video_name, "video=", $video);
 	var movie_start = false;
 	var script_start = false;
 	var script_id = 0;
@@ -48,7 +89,7 @@ define(['WS', 'Utils', 'Logger', 'Proto'], function(ws, Utils, Logger, Proto) {
 		if(data['cmd'].toString().toLowerCase() == 'scriptjump') {
 			if(data['code'] == 102) {
 				if(script_id) {
-					var ptime = parseInt($video.currentTime * 1000);
+					var ptime = videoObj.CurrentTime();
 					Watcher_lastTime = ptime;
 					ws.SendMessage(Proto.Cmd_PlayScript(ptime, script_id));
 					script_start = true;
@@ -63,7 +104,7 @@ define(['WS', 'Utils', 'Logger', 'Proto'], function(ws, Utils, Logger, Proto) {
 		if(data && data['code'] == 0 && data['cmd'] && data['cmd'].toString().toLowerCase() == 'videoinfo') {
 			console.log("Get Script And Play");
 			script_id = parseInt(data['msg']);
-			ws.SendMessage(Proto.Cmd_PlayScript(parseInt($video.currentTime * 1000), script_id));
+			ws.SendMessage(Proto.Cmd_PlayScript(videoObj.Duration(), script_id));
 			script_start = true;
 		}
 	}
@@ -71,31 +112,31 @@ define(['WS', 'Utils', 'Logger', 'Proto'], function(ws, Utils, Logger, Proto) {
 
 	// 更改 定时 同步
 	var _WaitVideoTimer = setInterval(function() {
-		if($video) {
+		if(videoObj.Ready()) {
 			if(!movie_start && $video.duration > 900) {
 				movie_start = true;
-				ws.SendMessage(Proto.Cmd_VideoInfo(window.location.href, video_name, parseInt($video.duration * 1000)));
-				
+				ws.SendMessage(Proto.Cmd_VideoInfo(window.location.href, video_name, videoObj.Duration()));
+
 				clearInterval(_WaitVideoTimer);
 				return;
 			}
 			if(movie_start && script_start) {
-				ws.SendMessage(Proto.Cmd_ScriptJump(parseInt($video.currentTime * 1000)));
+				ws.SendMessage(Proto.Cmd_ScriptJump(videoObj.CurrentTime()));
 			}
 			//console.log("ws.readyState = " + ws.readyState);
-			console.log("video pos=", video_name, $video.currentTime, "/", $video.duration);
+			console.log("video pos=", video_name, videoObj.CurrentTime(), "/", videoObj.Duration());
 		}
 	}, 10000);
 	// 每十次监测，强制加入 一次同步
 	var checkLoopTime = 1;
 	var _WatherTimer = setInterval(function() {
-		if($video && movie_start && script_start) {
+		if(videoObj.Ready() && movie_start && script_start) {
 			var nowTime = parseInt($video.currentTime * 1000);
 			if(checkLoopTime % 10 == 0 || Math.abs(nowTime - Watcher_loopInterval - Watcher_lastTime) > 100) {
-				console.log("video Jump =", Watcher_lastTime, "/", parseInt($video.duration * 1000), "=>", nowTime, " / ", parseInt($video.duration * 1000));
+				console.log("video Jump =", Watcher_lastTime, "/", videoObj.Duration(), "=>", nowTime, " / ", videoObj.Duration());
 				ws.SendMessage(Proto.Cmd_ScriptJump(nowTime));
 			}
-			checkLoopTime ++;
+			checkLoopTime++;
 			Watcher_lastTime = nowTime;
 		}
 	}, Watcher_loopInterval);
