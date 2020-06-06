@@ -5,7 +5,7 @@
 		'Utils': '../src/Utils',
 		'WS': '../src/WS',
 		'Logger': '../src/Logger',
-		'SDK': '../src/Core1',
+		'SDK': '../src/Core',
 		'Proto': '../src/Proto',
 	},
 	out: "sdk.min.js",
